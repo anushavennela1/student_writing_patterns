@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="body-full-height">
+    <head>        
+        <!-- META SECTION -->
+        <title>login</title>            
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <!-- END META SECTION -->
+        
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="css/theme-default.css"/>
+        <!-- EOF CSS INCLUDE -->                                     
+    </head>
+    <body>
+          <script type="text/javascript" src="js/plugins/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="js/plugins/jquery/jquery-ui.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+        <div class="login-container lightmode">
+        
+            <div class="login-box animated fadeInDown">
+               
+                <div class="login-body">
+                    <div class="login-title"><strong>Log In</strong> to your account</div>
+                    <form action="http://localhost:8081/ver1" class="form-horizontal" method="post">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" id="email" name="email" placeholder="E-mail"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input type="password" id="pass" name="pass" class="form-control" placeholder="Password"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        
+                       <!-- <div class="col-md-6">
+                            <button class="btn btn-info btn-block">Log In</button>
+                        </div>-->
+                        
+                        <div class="col-md-6">
+						
+                           <input id="but2" type="submit" class="btn btn-info btn-block" name="submit" value="Login" >
+                        
+						</div>
+                        
+                    </div>
+                   
+                 
+                    <div class="login-subtitle">
+                        Don't have an account yet? <a href="http://localhost:8081/reg">Create an account</a>
+                    </div>
+                    </form>
+                </div>
+               
+            </div>
+            
+        </div>
+        
+        <script>
+               
+            
+            
+        $(document).ready(function(){
+           // alert("Ready");
+           
+            $("#but2").click(function(){
+                //alert('clicked');
+                console.log("Function clicked");
+                var data = {   
+                 email :$('#email').val(),
+                 pass : $('#pass').val()
+
+                }
+                console.log(data);
+                $.ajax({
+                    url:'http://localhost:8081/ver1',
+                    dataType:'json',
+                    type:'post',
+                    data:data,
+                    success : function(result){
+                        console.log(result.name);
+                        localStorage.setItem('username', result.name);
+                        window.location.href = "http://localhost:8081/";                   
+                    },
+                    error : function(error){
+                        console.log(error);
+                    }
+                });
+            }); 
+        });
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
