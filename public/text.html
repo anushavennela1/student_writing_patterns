@@ -124,8 +124,70 @@ textarea{
             box-shadow: 0 0 3px 3px  gray;
         }
         
-    </style>
-    
+</style>
+
+<style>
+<!-- /* Popup container - can be anything you want */ -->
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+<!-- /* The actual popup */ -->
+.popup .popuptext {
+    visibility: hidden;
+    width: 300%;
+	height: 300%;
+    background-color: #CEB9C8;
+    color: red;
+    text-align: center;
+	font-size: 20px;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+<!-- /* Popup arrow */ -->
+.popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 500%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+	
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+<!-- /* Toggle this class - hide and show the popup */ -->
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+
+<!-- /* Add animation (fade in the popup) */ -->
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+</style>
+
     
     </head>
 
@@ -148,12 +210,9 @@ textarea{
                     <div class="profile">
                         <div class="profile-image">
                             <img src="images/mss.png" alt="Essay"/>
-                        </div>
-                       
-                        
+                        </div>                  
                     </div>
                 </li>
-               
                 <li>
                     <a href="/main"><span class="fa fa-desktop"></span> <span class="xn-text">Home</span></a>
                 </li>
@@ -172,6 +231,13 @@ textarea{
                         <li ><a href="/text"><span class="fa fa-pencil-square-o"></span> Text Area</a></li>
                      </ul>  
 				</li>
+				<li class="xn-openable" id="showEssays">
+                    <a href="index.html"><span class="fa fa-files-o"></span> <span class="xn-text">Stored Essays</span></a>
+                    <ul>
+                        <li ><div id="fr"></div></li>
+                     </ul>
+				</li>
+
                 
             <!-- END X-NAVIGATION -->
         </div>
@@ -215,38 +281,41 @@ textarea{
                 <!-- START CONTENT FRAME BODY -->
                 <div class="content-frame-body content-frame-body-left">
 
-                    
-                  
 
                     <div class="gallery" id="links">
                         <form>
                             
+                       <input type="text" id="title" ng-model="title" size=50 placeholder="Enter title of the essay" />  <br><br>
+							
                             
-
-                            
-                            <textarea ng-model="name" rows=10 cols=110 placeholder="Enter text to Analyze "></textarea>
+                            <textarea id="name"  ng-model="name" rows=10 cols=110 placeholder="Enter text to Analyze"></textarea>
+							
                       <!-- <div class="pull-left push-up-10">
                         <button class="btn btn-primary" id="gallery-toggle-items">analyze</button>
                     </div> -->
                             <center>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                        <button ng-click="hideShow=(hideShow ? false : true)" class="button"><span>Analyze</span></button>
-                            </center>
-                                <br>
+							
+                        <div class="popup" onclick="myFunction()"><button class="button" id="chk">Check Essay</button>
+							<span class="popuptext" id="myPopup">The essay is Positive.</span>
+						</div>
+						<button id="storeAnals" class="button"> <span>Save</span></button>
 						
-						<br>
-<br>
+                        <button  ng-click="hideShow=(hideShow ? false : true)" class="button"> <span>Analyze</span></button>
+						
+                            </center>
+                                <br><br><br>
 
 						<center><div ng-if='hideShow' class="topnav" id="mytopnav">
-<a  href ="#/emotion">EMOTION</a>
-<a href="#/concepts">CONCEPTS</a>
-<a href="#/categories">CATEGORIES</a>
-<a href="#/sentiment">SENTIMENT</a>
-<a href="#/tone"> Language Style</a>
-</div></center>
+							<a  href ="#/emotion">EMOTION</a>
+							<a href="#/concepts">CONCEPTS</a>
+							<a href="#/categories">CATEGORIES</a>
+							<a href="#/sentiment">SENTIMENT</a>
+							<a href="#/tone"> Language Style</a>
+						</div></center>
 						</form>
 						<br><br><br>
                     <ng-view>
-</ng-view>
+					</ng-view>
                     
                     </div>
 
@@ -330,7 +399,130 @@ textarea{
 <script src="sentimentctrl.js"></script>
 <script src="tonectrl.js"></script>
 <script src="canvasjs.min.js"></script>
-    
-    </body>
+
+<script>
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+$(document).ready(function(){
+document.getElementById('title').value=getParameterByName('str').replace(/^"(.*)"$/, '$1');
+var title = document.getElementById('title').value;
+//alert("the getting title is :"+title);
+//console.log("the getting title is :"+title);
+
+$.post("http://localhost:8081/gettingEssay", {
+		"title" : title
+	}).then(function(response){
+			console.log(response);
+		document.getElementById('name').value=response;
+
+		});
+});
+</script>
+
+<script>
+		$(document).ready(function(){
+			$("#showEssays").click(function(){
+				//alert("Show essays button is clicked");
+				//console.log("Show essays button is clicked");
+			  $.post("http://localhost:8081/myessays", {
+			
+			  }).then(function(response){
+				//$scope.items=response;
+				<!-- alert(response); -->
+				<!-- console.log(JSON.stringify(response)); -->
+							
+				for(var i=0; i<response.length; i++)
+				{
+				console.log("<a href=/text?str="+JSON.stringify(response[i].title)+"></a>");
+				
+				var data = "<a href=/text?str="+response[i].title+">"+response[i].title+"</a>";
+				
+				//alert(document.getElementById('title').value=JSON.stringify(response[i].title));
+				
+
+				document.getElementById('fr').innerHTML= data+"<br>"+document.getElementById('fr').innerHTML;
+				//console.log(document.getElementById('fr').innerHTML);
+				}
+			   });
+			});
+		});
+	</script>
+
+<script>
+	$(document).ready(function()
+	{
+		//alert("Ready storeAnals button");
+		$("#storeAnals").click(function(){
+			//alert("storeAnals button clicked");
+			console.log("storeAnals button clicked");
+			var title = $('#title').val();
+			var essay = $('#name').val();
+			
+			$.post("http://localhost:8081/analyzetext", {
+					"title" : title,
+					"essay": essay
+			}).success(function(response){
+				//$scope.items=response;
+			});
+		});
+	});	
+</script>
+
+<script>
+	$(document).ready(function()
+	{
+		//alert("Ready saveEssay button");
+		$("#saveEssay").click(function(){
+			//alert("saveEssay button clicked");
+			console.log("storeAnals button clicked");
+			var title = $('#title').val();
+			var essay = $('#name').val();
+			console.log("The title :"+title+"the essay :"+essay);
+			$.post("http://localhost:8081/savingEssay", {
+					"title" : title,
+					"essay": essay
+			}).success(function(response){
+				//$scope.items=response;
+			});
+		});
+	});	
+</script>
+
+<script>
+$(document).ready(function()
+{
+	$("input").blur(function()
+	{
+		//alert("title is required");
+		var title = $('#title').val();
+		//alert("title is "+ title);
+		$.post("http://localhost:8081/checktitle",{
+				"title": title
+			}).success(function(response){
+		     console.log(response);
+				
+				alert(response.output);
+				
+			});
+	});
+});
+</script>
+
+<script>
+// When the user clicks on div, open the popup
+function myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+}
+</script>
+
+ </body>
 
 </html>

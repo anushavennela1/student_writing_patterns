@@ -17,7 +17,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 
-    <style type="text/css">
+<style type="text/css">
 
 .topnav
 {
@@ -135,7 +135,7 @@ div.cont{
     
 }
 
-    </style>
+</style>
 
 
     </head>
@@ -179,7 +179,13 @@ div.cont{
                 <li class="xn-openable">
                     <a href="index.html"><span class="fa fa-files-o"></span> <span class="xn-text">Essay Writing</span></a>
                     <ul>
-                        <li><a href="/text"><span class="fa fa-pencil-square-o"></span> Text Area</a></li>
+                        <li><a href="/essay"><span class="fa fa-pencil-square-o"></span> Text Area</a></li>
+                     </ul>
+				</li>
+				<li class="xn-openable" id="showEssays">
+                    <a href="index.html"><span class="fa fa-files-o"></span> <span class="xn-text">Stored Essays</span></a>
+                    <ul>
+                        <li ><div id="fr"></div></li>
                      </ul>
 				</li>
             <!-- END X-NAVIGATION -->
@@ -391,6 +397,34 @@ div.cont{
     <script src="sentimentctrl.js"></script>
     <script src="tonectrl.js"></script>
     <script src="canvasjs.min.js"></script>
+	
+	<script>
+		$(document).ready(function(){
+			$("#showEssays").click(function(){
+				//alert("Show essays button is clicked");
+				//console.log("Show essays button is clicked");
+			  $.post("http://localhost:8081/myessays", {
+			
+			  }).then(function(response){
+				//$scope.items=response;
+				<!-- alert(response); -->
+				<!-- console.log(JSON.stringify(response)); -->
+							
+				for(var i=0; i<response.length; i++)
+				{
+				console.log("<a href=/text?str="+JSON.stringify(response[i].title)+"></a>");
+				
+				var data = "<a href=/text?str="+JSON.stringify(response[i].title)+">"+response[i].title+"</a>";
+				
+				document.getElementById('fr').innerHTML= data+"<br>"+document.getElementById('fr').innerHTML;
+				//console.log(document.getElementById('fr').innerHTML);
+				}
+				
+			   });
+			});
+		});
+	</script>
+	
 
     </body>
 
