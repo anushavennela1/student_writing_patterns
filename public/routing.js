@@ -29,6 +29,11 @@ $routeProvider
   templateUrl:'tone.html',
   controller:'ctrl5'
 })
+.when('/checkessay',
+{
+	templateUrl: 'chkEssay.html',
+	controller: 'ctrl6'
+})
 
 })
 

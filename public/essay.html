@@ -142,10 +142,10 @@ textarea{
 <!-- /* The actual popup */ -->
 .popup .popuptext {
     visibility: hidden;
-    width: 300%;
-	height: 300%;
-    background-color: #CEB9C8;
-    color: red;
+    width: 800px;
+	height: 300px;
+    background-color: #555;
+    color: #fff;
     text-align: center;
 	font-size: 20px;
     border-radius: 6px;
@@ -295,9 +295,10 @@ textarea{
                     </div> -->
                             <center>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
 							
-						 <div class="popup" onclick="myFunction()"><button class="button" id="chk">Check Essay</button>
-							<span class="popuptext" id="myPopup">The essay is Positive.</span>
+						 <div class="popup" onclick="myFunction()"><a href ="#/checkessay"><button class="button" id="chk">Check Essay</button><a>
+							<span class="popuptext" id="myPopup"></span>
 						</div>
+						
 						<button id="storeAnals" class="button"> <span>Save</span></button>
 						
                         <button  ng-click="hideShow=(hideShow ? false : true)" class="button"> <span>Analyze</span></button>
@@ -306,7 +307,7 @@ textarea{
                                 <br><br><br>
 
 						<center><div ng-if='hideShow' class="topnav" id="mytopnav">
-							<a  href ="#/emotion">EMOTION</a>
+							<a href ="#/emotion">EMOTION</a>
 							<a href="#/concepts">CONCEPTS</a>
 							<a href="#/categories">CATEGORIES</a>
 							<a href="#/sentiment">SENTIMENT</a>
@@ -399,7 +400,7 @@ textarea{
 <script src="sentimentctrl.js"></script>
 <script src="tonectrl.js"></script>
 <script src="canvasjs.min.js"></script>
-
+<script src="chkessayctrl.js"></script>
 
 <script>
 	$(document).ready(function()
@@ -456,16 +457,23 @@ $(document).ready(function()
 		$.post("http://localhost:8081/checkNegetive",{
 				"text": text
 			}).success(function(response){
-						//console.log(response);
-						for(i=0; i<response.length; i++)
-						{
+				    //console.log(JSON.stringify(response));
+					for(i=0; i<response.length; i++)
+					{
 						<!-- console.log("The key phrase response;;;"+response[i].leb +"-----"+response[i].sentence); -->
 						<!-- alert(JSON.stringify(response[i].leb +"-----"+response[i].sentence)); -->
+						var res = response[i].leb;
+						var sentence = response[i].sent;
+						var myRes = "negative";
+						console.log(res,'---- ---',sentence);
+						if(res==myRes)
+						{
+						document.getElementById('myPopup').innerHTML="Below sentence is Negetive, Please change it..! "+"<br>"+response[i].sent+"<br>"+document.getElementById('myPopup').innerHTML;
 						
-						document.getElementById('myPopup').innerHTML="This sentence is Negetive, Please change it..!"+"--->"+response[i].sentence;
-						
+						//alert(response[i].sent);
 						}
-					});
+					}
+				});
 	});
 });
 </script>

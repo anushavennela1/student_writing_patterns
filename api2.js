@@ -2,7 +2,7 @@ var express = require('express');
 
 //importing tone analyzer
 var ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
-
+var port=process.env.PORT || 8081
 //importing NLU
 var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 
@@ -333,7 +333,8 @@ app.post('/checkNegetive', function(req, res){
 	};
 	//console.log(params.text);
 	var arr2 = [];
-
+	var arr3 = [];
+	
 	//Tone analyzer function to divide the essay into sentences
 	tone_analyzer.tone(params, function(err, response){
 			if(err)
@@ -343,42 +344,34 @@ app.post('/checkNegetive', function(req, res){
 			else
 			{
 				console.log("111111;;the tone sentence is "+ JSON.stringify(response));
-				
+				for(i=0; i<response.sentences_tone.length; i++)
+				{
+					arr2[i]= response.sentences_tone[i].text;
+				}
+				console.log(arr2);
 				getDetails(response, function(response1)
 					{
 						console.log("666666666666666",response1);
+						console.log(arr2);
 						
-						for(o=0;o<response1.length;o++)
+						for(j=0; j<response1.length; j++)
 						{
-							var labels = response1[o].lab;
-							var myLab = "negative";
-							console.log("77777777777777");
-							console.log("the label value :"+response1[o].lab);
-							console.log("Req: sent: "+response1[o].sent);
-							if(labels == myLab)
+							var ob ={
+								'leb': response1[j].lab,
+								'sent': arr2[j]
+									};
+							arr3.push(ob);
+							
+							if(j==response1.length-1)
 							{
-							var results = {
-										'leb': response1[o].lab,
-										'sentence': response1[o].sent
-										}
-							
-							arr2.push(results);
-							
-							console.log("88888888888888888"+JSON.stringify(arr2));
-						
-								if(o==response1.length-1)
-								{
-									console.log('hello');
-									res.send(arr2);
-								}
-							
+								console.log('the response1 length:: ',response1.length);
+								console.log('ARR3 = ',arr3);
+								res.send(arr3);
 							}
-
 						}
-
+						
 					});	
 					
-
 			}
 	});
 
@@ -390,6 +383,8 @@ var getDetails = function(res, callback)
 	{
 		var arr = [];
 		var g=[];
+	
+		//console.log('the res:::::: ', JSON.stringify(res));
 		for(var i=0; i<res.sentences_tone.length; i++)
 		{
 			// console.log('222222222222',res.sentences_tone[i].text);
@@ -399,6 +394,7 @@ var getDetails = function(res, callback)
 		
 		for(k=0; k<arr.length; k++)
 		{
+			
 			 natural_language_understanding.analyze({
 								 //'text': res.sentences_tone[i].text,
 								 'text': arr[k],
@@ -406,8 +402,8 @@ var getDetails = function(res, callback)
 									  'sentiment': {}
 											 }
 						 }, function(err, resp){
-								 if(err)
-								 {
+								if(err)
+								{
 									 callback({
 											'array':err
 											});	 
@@ -415,104 +411,31 @@ var getDetails = function(res, callback)
 								}
 								else
 								{
+								
 									console.log("333333333333---"+JSON.stringify(resp));
-									
-									
-									for(j=0;j<arr.length;j++)
-									{
-											var ob ={
-												'lab': resp.sentiment.document.label,
-												'sent': arr[j]
-													};
-										g.push(ob);
-									}
-										for(m=0; m<g.length; m++)
-										{
-										console.log("44444444444444444444"+JSON.stringify(g[m].sent));
-										}
-										console.log("5555 callbacke................");
-										callback(g);
 										
+										var ob ={
+											'lab': resp.sentiment.document.label
+											
+												};
+											g.push(ob);
+											
+										
+										//console.log('g length :',g.length,' arr length :',arr.length);
+										if(arr.length==g.length)
+										{
+											console.log('call back....',k,JSON.stringify(g));
+											callback(g);
+										}
+	
 								}
+								
+								
 			});
 		}
 		
 	}
 
-
-// app.post('/checkNegetive', function(req, res)
-// {
-	// console.log('Welcome to checkNegetive block...!');
-	// app.use(cors());
-	// var essay = req.body.text;
-	// console.log(essay);
-	// var arr1 = [];
-	// var lebals = [];
-	// var arr2 = [];
-	
-	// //essay is taken as input object
-	// var params ={
-		// 'text': essay,
-		// tones: 'emotion'
-				// };
-	
-	// //tone analyzer function to divide esssay sentence wise
-	// tone_analyzer.tone(params, function(err, result){
-				// if(err)
-				// {
-					// console.log('tone analyzer error :',err);
-				// }
-				// else
-				// {
-					// console.log('The result from tone :', result);
-					// console.log('the length of sentences_tone array :',result.sentences_tone.length);
-					// for(i=0; i<result.sentences_tone.length; i++)
-					// {
-						// arr1[i]=result.sentences_tone[i].text;
-					// }
-					// console.log('The sentences array1111 is :', arr1);
-				// }
-				// var j=0;
-				// //functionality of NLU
-				// while(j<arr1.length)
-				// {
-					// console.log('NLU sentences are :',arr1[j]);
-					
-					// natural_language_understanding.analyze({
-										// 'text': arr1[j],
-										// 'features': {
-												// 'sentiment': {}
-													// }
-							// }, function(err2, result2){
-											// if(err)
-											// {
-												// console.log(err2);
-											// }
-											// else
-											// {
-												// console.log('NLU result2 is :',result2);
-												// console.log('Lebel is :',result2.sentiment.document.label)
-												// var ob ={
-													 // 'lab': result2.sentiment.document.label
-														// };
-												// lebals.push(ob);
-											// }
-											// console.log('1111111',lebals);
-											// console.log('The sentences array2222 is :', arr1);
-											
-											// console.log('arr2 is :',arr2);
-											
-											// res.send()
-									// });
-									
-					// j++;
-				// }
-				
-				
-	// });
-	
-	
-// });
 
 app.post('/savingEssay', function(req, res){
 	console.log("The saving essay block....");
@@ -678,6 +601,10 @@ app.get('/concept',function(req,res){
 res.sendFile(__dirname+'/public/'+'concepts.html');
 });
 
+app.get('/checkessay', function(req,res){
+	res.sendFile(__dirname+'/public/'+'chkEssay.html');
+});
+
 app.get('/sentiment',function(req,res){
 res.sendFile(__dirname+'/public/'+'sentiment.html');
 });
@@ -833,6 +760,6 @@ app.post('/sample5',function (req, res) {
 });
 
 
-app.listen(8081);
+app.listen(port);
 console.log("server running At 8081");
 

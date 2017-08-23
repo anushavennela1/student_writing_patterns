@@ -1,19 +1,23 @@
 {
-  "name": "modification",
-  "version": "1.0.0",
-  "description": "",
-  "main": "api.js",
+  "name": "bluemix-hello-node",
+  "version": "0.0.0",
   "dependencies": {
+    "cf-deployment-tracker-client": "*",
     "cors": "^2.8.4",
     "ejs": "^2.5.6",
     "express-session": "^1.15.3",
     "mongoose": "^4.9.10",
-    "watson-developer-cloud": "^2.31.1"
+    "watson-developer-cloud": "^2.31.1",
+	"express": "*",
+	"cloudant": "*",
+	"body-parser": "*"
   },
-  "devDependencies": {},
+  "main": "api2.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api2.js"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/miraclelabs19/student_writing_patterns.git"
+  }
 }
