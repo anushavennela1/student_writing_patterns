@@ -27,12 +27,6 @@ app.use(session({secret: 'varsh',saveUninitialized: true,resave: true}));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: true}));
 
-/* app.use(function(req, res, next){
-  res.header("Access-Control-Allow-Origin","*");
-  res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
-  next();
-}); */
-
 app.use(express.static(__dirname + '/public'));
 var sess;
 
@@ -51,10 +45,8 @@ app.get('/reg',function(req,res){
 });
 
 app.post('/ver1',function(req,res){
-	//console.log('This is ver1');
+
 	var email = req.body.email;
-	//console.log(email);
-	
 	var db = cloudant.db.use('meandb1');
 	db.get(email, function(err, data)
 	   {
@@ -64,17 +56,14 @@ app.post('/ver1',function(req,res){
 			}
 			else{
 				if(data.length != 0 ){
-				 //console.log(data.length);
 					if(data.password == req.body.pass){
 					sess=req.session;
 					sess.email=req.body.email;
-					//res.json({"name":data.name});
 					res.redirect('/main');
 					  }
                else{                
                 res.send("check your password");
                }
-             //res.send('success');
 		    } 
 		   else{
 			   console.log('check your mail id once');
@@ -92,9 +81,7 @@ app.post('/analyzetext', function(req, res){
 		var essay = req.body.essay;
 		
 		app.use(cors());
-		// console.log("-----"+email);
-		// console.log("-----"+essay);
-		// console.log("-----"+title);
+		
 		var db = cloudant.db.use('meandb1');
 		db.get(email, function(err, doc){
 				if(err)
@@ -108,14 +95,12 @@ app.post('/analyzetext', function(req, res){
 					arr = doc.essays;
 					if(doc.essays)
 					{
-						//console.log(arr);
 						var obj = {
 									"title": title,
 									"essay": essay
 									};
 						arr.push(obj);
-						//console.log(arr);
-						
+
 						db.insert({
 						_id : doc.email,
 						_rev: doc._rev,
@@ -138,7 +123,6 @@ app.post('/analyzetext', function(req, res){
 					}
 					else
 					{
-					//console.log(doc.name+' '+ doc.email+' '+ doc._rev);
 					
 					db.insert({
 						_id : doc.email,
@@ -167,17 +151,11 @@ app.post('/analyzetext', function(req, res){
 		});
 		
 });
-app.post('/getting_data',function(req,res){
-   // console.log('inside register api',JSON.stringify(req.body));
+app.post('/getting_data',function(req,res){  
 	var name = req.body.name;
-	//console.log(name);
 	var email = req.body.email;
-	//console.log(email);
 	var password = req.body.password;
-	//console.log(password);
 	var type = req.body.desig;
-	//console.log(name+' '+ email+' '+ password +' '+ type);
-	
 	app.use(cors());
 	
 	var db = cloudant.db.use('meandb1');
@@ -213,7 +191,6 @@ app.post('/myessays', function(req, res){
 		{
 			var arr = [];
 			arr = data.essays;
-			//console.log(arr);
 			res.send(arr);
 		}
 	});
@@ -224,8 +201,6 @@ app.post('/myessays', function(req, res){
 app.post('/gettingEssay', function(req, res){
 	var title = req.body.title;
 	var title2= title.replace(/^"(.*)"$/, '$1');
-	// console.log("the getting essay title is "+title);
-	// console.log("the getting essay title is "+title2);
 	var email = sess.email;
 	var db = cloudant.db.use('meandb1');
 	
@@ -237,7 +212,7 @@ app.post('/gettingEssay', function(req, res){
 						"output":"error occured"
 					}
 					return res.json(response);
-					//console.log(response);
+					
 				}
 				else
 				{
@@ -246,29 +221,20 @@ app.post('/gettingEssay', function(req, res){
 					var i;
 					
 					for(i=0; i<arr.length; i++)
-					  {
-						  // console.log("the current title is: "+title);
-						// console.log(arr[i].title);
-						// console.log(arr[i].essay);
-						
+					  {						
 						if(title2 == arr[i].title)
-						{
-							//console.log("matched essay is :"+arr[i].essay);
-							
+						{	
 							res.send(arr[i].essay);
 						}
-	
 					  }
 				}
 		});
 });
 
 app.post('/checktitle', function(req, res){
-	//console.log("Welcome to title checking block");
 	app.use(cors());
 	var title = req.body.title;
 	var email = sess.email;
-	//console.log("--------------------------"+title);
 	var db = cloudant.db.use('meandb1');
 		db.get(email, function(err, doc)
 		{
@@ -277,7 +243,6 @@ app.post('/checktitle', function(req, res){
 					response = {
 						"output":"error occured"
 								}
-					//console.log(response);
 					return res.json(response);
 					
 				}
@@ -287,8 +252,6 @@ app.post('/checktitle', function(req, res){
 					{
 						var arr = [];
 					  arr = doc.essays;
-					  //console.log(doc);
-					  //console.log(doc.essays);
 					  var i;
 					  for(i=0; i<arr.length; i++)
 					  {
@@ -309,12 +272,11 @@ app.post('/checktitle', function(req, res){
 					else
 					{
 						response ={
-										"output": "new title"
-										}
+								"output": "new title"
+								};
 										
 							return res.json(response);
 					}
-					  
 				}
 		});		
 });
@@ -324,14 +286,14 @@ app.post('/checkNegetive', function(req, res){
 	console.log("checkNegetive block is activated");
 	app.use(cors());
 	var essay = req.body.text;
-	//console.log(essay);
+	console.log(essay);
 	
 	//essay is taken as input object
 	var params ={
-		'text': essay,
-		tones: 'emotion'
-	};
-	//console.log(params.text);
+		 'text': essay,
+		 tones: 'emotion'
+			};
+	
 	var arr2 = [];
 	var arr3 = [];
 	
@@ -343,21 +305,22 @@ app.post('/checkNegetive', function(req, res){
 			}
 			else
 			{
-				console.log("111111;;the tone sentence is "+ JSON.stringify(response));
+				console.log("111111 ---> the tone sentence is "+ JSON.stringify(response));
 				for(i=0; i<response.sentences_tone.length; i++)
 				{
 					arr2[i]= response.sentences_tone[i].text;
 				}
-				console.log(arr2);
-				getDetails(response, function(response1)
+				console.log('arr2 = ',arr2);
+				getDetails(arr2, function(response1)
 					{
 						console.log("666666666666666",response1);
-						console.log(arr2);
+						console.log('arr2 == ',arr2);
 						
 						for(j=0; j<response1.length; j++)
 						{
 							var ob ={
 								'leb': response1[j].lab,
+								'score': response1[j].score,
 								'sent': arr2[j]
 									};
 							arr3.push(ob);
@@ -373,7 +336,7 @@ app.post('/checkNegetive', function(req, res){
 					});	
 					
 			}
-	});
+	 });
 
 	
 });
@@ -384,30 +347,28 @@ var getDetails = function(res, callback)
 		var arr = [];
 		var g=[];
 	
-		//console.log('the res:::::: ', JSON.stringify(res));
-		for(var i=0; i<res.sentences_tone.length; i++)
-		{
-			// console.log('222222222222',res.sentences_tone[i].text);
-			arr.push(res.sentences_tone[i].text);
-		}
-		console.log('222222',arr);
+		console.log('the res:::::: ', JSON.stringify(res));
+
+		// for(var i=0; i<res.sentences_tone.length; i++)
+		// {
+			// // console.log('222222222222',res.sentences_tone[i].text);
+			// arr.push(res.sentences_tone[i].text);
+		// }
+		// console.log('222222',arr);
 		
-		for(k=0; k<arr.length; k++)
-		{
-			
+		for(k=0; k<res.length; k++)
+		{			
 			 natural_language_understanding.analyze({
-								 //'text': res.sentences_tone[i].text,
-								 'text': arr[k],
-								 'features': {
-									  'sentiment': {}
-											 }
-						 }, function(err, resp){
+												'text': res[k],
+												'features': {
+													'sentiment': {}
+															}
+						}, function(err, resp){
 								if(err)
 								{
 									 callback({
 											'array':err
 											});	 
-									//console.log('error:', err);
 								}
 								else
 								{
@@ -415,23 +376,20 @@ var getDetails = function(res, callback)
 									console.log("333333333333---"+JSON.stringify(resp));
 										
 										var ob ={
-											'lab': resp.sentiment.document.label
-											
+											'lab': resp.sentiment.document.label,
+											'score': resp.sentiment.document.score
 												};
-											g.push(ob);
-											
-										
-										//console.log('g length :',g.length,' arr length :',arr.length);
-										if(arr.length==g.length)
+										g.push(ob);
+								
+										if(res.length==g.length)
 										{
-											console.log('call back....',k,JSON.stringify(g));
+											console.log('call back....',JSON.stringify(g));
 											callback(g);
 										}
 	
 								}
 								
-								
-			});
+					});
 		}
 		
 	}

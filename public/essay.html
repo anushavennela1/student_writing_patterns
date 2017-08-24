@@ -458,20 +458,24 @@ $(document).ready(function()
 				"text": text
 			}).success(function(response){
 				    //console.log(JSON.stringify(response));
+					var flag = 0;
 					for(i=0; i<response.length; i++)
 					{
-						<!-- console.log("The key phrase response;;;"+response[i].leb +"-----"+response[i].sentence); -->
-						<!-- alert(JSON.stringify(response[i].leb +"-----"+response[i].sentence)); -->
 						var res = response[i].leb;
+						var score = response[i].score;
 						var sentence = response[i].sent;
-						var myRes = "negative";
-						console.log(res,'---- ---',sentence);
-						if(res==myRes)
+						
+						if(response[i].score<0)
 						{
+							flag=1;
 						document.getElementById('myPopup').innerHTML="Below sentence is Negetive, Please change it..! "+"<br>"+response[i].sent+"<br>"+document.getElementById('myPopup').innerHTML;
 						
 						//alert(response[i].sent);
 						}
+					}
+					if(flag==0)
+					{
+						document.getElementById('myPopup').innerHTML="No negative sentence found..!";
 					}
 				});
 	});
